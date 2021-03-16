@@ -1,6 +1,7 @@
 %% Script to be run in sherlock to make plots
 AM4_Data_Path = '/scratch/users/mborrus/Globus_data/gfdl.intel18-prod-openmp-extra/';
 mkdir plots
+mkdir plots/u
 %% Grab the U values from each folder
 % ucomp = Size:       144x90x33x365
 %         Dimensions: grid_xt,grid_yt,pfull,time
@@ -30,18 +31,18 @@ title('U at 1.25 lon - 60 deg N - 850 HPa')
 xlabel('Days')
 ylabel('u, m/s')
 
-saveas(Single850,['./plots/single_850.png'])
+saveas(Single850,['./plots/u/single_850.png'])
 %%
 All850 = figure(2);
 clf, hold on
 data = mean(U_850HPa_60lat(:,:,:),2);
 plot(days,squeeze(data(:,:)))
 axis([1 100 -inf inf])
-title('Zonal Mean')
+title('Zonal Mean u - 60 deg N - 850 HPa')
 xlabel('Days')
-ylabel('Zonal Mean u - 60 deg N - 850 HPa')
+ylabel('Zonal Mean')
 
-saveas(All850,['./plots/all_850.png'])
+saveas(All850,['./plots/u/all_850.png'])
 %%
 Single500 = figure(10);
 clf, hold on
@@ -52,18 +53,18 @@ xlabel('Days')
 ylabel('u, m/s')
 
 
-saveas(Single500,['./plots/single_500.png'])
+saveas(Single500,['./plots/u/single_500.png'])
 %%
 All500 = figure(20);
 clf, hold on
 data = mean(U_500HPa_60lat(:,:,:),2);
 plot(days,squeeze(data(:,:)))
 axis([1 100 -inf inf])
-title('Zonal Mean')
+title('Zonal Mean u - 60 deg N - 500 HPa')
 xlabel('Days')
-ylabel('Zonal Mean u - 60 deg N - 500 HPa')
+ylabel('Zonal Mean')
 
-saveas(All500,['./plots/all_500.png'])
+saveas(All500,['./plots/u/all_500.png'])
 %%
 Single10 = figure(100);
 clf, hold on
@@ -73,15 +74,15 @@ title('U at 1.25 lon - 60 deg N - 10 HPa')
 xlabel('Days')
 ylabel('u, m/s')
 
-saveas(Single10,['./plots/single_10.png'])
+saveas(Single10,['./plots/u/single_10.png'])
 %%
 All10 = figure(200);
 clf, hold on
 data = mean(U_10HPa_60lat(:,:,:),2);
 plot(days,squeeze(data(:,:)))
 axis([1 100 -inf inf])
-title('Zonal Mean')
+title('Zonal Mean u - 60 deg N - 10 HPa')
 xlabel('Days')
-ylabel('Zonal Mean u - 60 deg N - 10 HPa')
+ylabel('Zonal Mean ')
 
-saveas(All10,['./plots/all_10.png'])
+saveas(All10,['./plots/u/all_10.png'])
