@@ -1,7 +1,7 @@
 %% Script to be run in sherlock to make plots
 AM4_Data_Path = '/scratch/users/mborrus/Globus_data/gfdl.intel18-prod-openmp-extra/';
 mkdir plots
-mkdir plots/rms
+mkdir plots/RMS
 %% Grab the U values from each folder
 % ucomp = Size:       144x90x33x365
 %         Dimensions: grid_xt,grid_yt,pfull,time
@@ -20,29 +20,36 @@ for i = 1:20;
     U_500HPa_60lat(i,:,:) = squeeze(temp_u(:,75,18,:));
     U_10HPa_60lat(i,:,:) = squeeze(temp_u(:,75,3,:));
 end
+%% Index Matrix
+Index(1,:) = [2:20];
+Index(20,:) = [1:19];
+for i = 2:19
+    Index(i,:)=[1:i-1 i+1:20]
+end
 %%
-for i = 1:3
-    error = squeeze((U_850HPa_60lat(i,1,:)-U_850HPa_60lat(:,1,:)));
+for i = 1:20
+    % This takes the 
+    error = squeeze((U_850HPa_60lat(i,1,:)-U_850HPa_60lat(Index,1,:)));
     rmserror = rms(error);
     RMS850single(i,:)=rmserror;
     
-    errormean = squeeze((mean(U_850HPa_60lat(i,:,:),2)-mean(U_850HPa_60lat(:,1,:),2)));
+    errormean = squeeze((mean(U_850HPa_60lat(i,:,:),2)-mean(U_850HPa_60lat(Index,1,:),2)));
     rmserrormean = rms(errormean);
     RMS850mean(i,:)=rmserrormean;
     
-    error = squeeze((U_500HPa_60lat(i,1,:)-U_500HPa_60lat(:,1,:)));
+    error = squeeze((U_500HPa_60lat(i,1,:)-U_500HPa_60lat(Index,1,:)));
     rmserror = rms(error);
     RMS500single(i,:)=rmserror;
     
-    errormean = squeeze((mean(U_500HPa_60lat(i,:,:),2)-mean(U_500HPa_60lat(:,1,:),2)));
+    errormean = squeeze((mean(U_500HPa_60lat(i,:,:),2)-mean(U_500HPa_60lat(Index,1,:),2)));
     rmserrormean = rms(errormean);
     RMS500mean(i,:)=rmserrormean;
     
-    error = squeeze((U_10HPa_60lat(i,1,:)-U_10HPa_60lat(:,1,:)));
+    error = squeeze((U_10HPa_60lat(i,1,:)-U_10HPa_60lat(Index,1,:)));
     rmserror = rms(error);
     RMS10single(i,:)=rmserror;
     
-    errormean = squeeze((mean(U_10HPa_60lat(i,:,:),2)-mean(U_10HPa_60lat(:,1,:),2)));
+    errormean = squeeze((mean(U_10HPa_60lat(i,:,:),2)-mean(U_10HPa_60lat(Index,1,:),2)));
     rmserrormean = rms(errormean);
     RMS10mean(i,:)=rmserrormean;
 end
