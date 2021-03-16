@@ -1,9 +1,10 @@
 %% Script to be run in sherlock to make plots
+%This is where the data is held
 AM4_Data_Path = '/scratch/users/mborrus/Globus_data/gfdl.intel18-prod-openmp-extra/';
-mkdir plots
-mkdir plots/RMS
+mkdir plots %where plots should go
+mkdir plots/RMS %Where these specific plots should go
 %% Grab the U values from each folder
-% ucomp = Size:       144x90x33x365
+%       ucomp = Size:       144x90x33x365
 %         Dimensions: grid_xt,grid_yt,pfull,time
 %         Dimensions: lon, lat,pfull,time
 U_850HPa_60lat = []; %pressure level = 23: 848.8 HPa
@@ -13,30 +14,42 @@ days = (1:365);
 % Lat(75) = 59 deg
 % 
 for i = 1:20;
+    % The files are spread out in 20 different folders, this gets you to each of them
     temp_path = strcat(AM4_Data_Path,num2str(i),'/dailyU.nc');
     temp_u = ncread(temp_path,'ucomp');
-    %
+    % This creates three seperate i x 144 x 365 variables
+    % This could be done in a single variable, but then it would show up in
+    % your workspace as a 4-D double (gross!)
     U_850HPa_60lat(i,:,:) = squeeze(temp_u(:,75,23,:));
     U_500HPa_60lat(i,:,:) = squeeze(temp_u(:,75,18,:));
     U_10HPa_60lat(i,:,:) = squeeze(temp_u(:,75,3,:));
 end
 %% Index Matrix
+% Create an index of what to subtract from your base in each iteration, so
+% as to not include itself (not sure how much this effects it to start
+% with...)
 Index(1,:) = [2:20];
 Index(20,:) = [1:19];
 for i = 2:19
-    Index(i,:)=[1:i-1 i+1:20]
+    Index(i,:)=[1:i-1 i+1:20];
 end
 %%
 for i = 1:20
-    % This takes the 
+    % This takes error between the base and the 19 alternatives for the
+    % first longitude bin, with is 1.25 deg
     error = squeeze((U_850HPa_60lat(i,1,:)-U_850HPa_60lat(Index,1,:)));
+    % Gets the RMS of the error
     rmserror = rms(error);
+    % Save the RMS error to the corresponding run
     RMS850single(i,:)=rmserror;
     
+    %Same as above, but this takes the zonal mean of the u_comp prior to
+    %calculating error
     errormean = squeeze((mean(U_850HPa_60lat(i,:,:),2)-mean(U_850HPa_60lat(Index,1,:),2)));
     rmserrormean = rms(errormean);
     RMS850mean(i,:)=rmserrormean;
     
+    %repeate for 500 Hpa, etc... 
     error = squeeze((U_500HPa_60lat(i,1,:)-U_500HPa_60lat(Index,1,:)));
     rmserror = rms(error);
     RMS500single(i,:)=rmserror;
