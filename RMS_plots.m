@@ -1,129 +1,166 @@
-%% Script to be run in sherlock to make plots
-%This is where the data is held
+%% RMS_plots V2 
+% Script to be run in sherlock to make plots
+% Marshall Borrus
+% This is where the data is held
+
 AM4_Data_Path = '/scratch/users/mborrus/Globus_data/gfdl.intel18-prod-openmp-extra/';
-mkdir plots %where plots should go
-mkdir plots/RMS %Where these specific plots should go
+mkdir plots         %where plots should go
+mkdir plots/RMS     %Where these specific plots should go
+
+%%
+
+% Get the pressure and lats values
+
+temp_path = strcat(AM4_Data_Path,num2str(1),'/dailyU.nc');
+pressure_levels = ncread(temp_path,'pfull');
+lat_ranges = ncread(temp_path,'grid_yt');
+days = (1:100);
+
+% Set pressure and lat ranges
+
+Lower_Tropo = find(pressure_levels<850 & pressure_levels>500);
+Upper_Tropo = find(pressure_levels<500 & pressure_levels>100);
+Stratosphere= find(pressure_levels<100 & pressure_levels>1);
+
+
+
+N_Hi = find(lat_ranges >  50);
+S_Hi = find(lat_ranges < -50);
+N_Mid = find(lat_ranges > 20 & lat_ranges < 50);
+S_Mid = find(lat_ranges < -20 & lat_ranges > -50);
+Equator = find(lat_ranges > -20 & lat_ranges < 20);
+
 %% Grab the U values from each folder
-%       ucomp = Size:       144x90x33x365
-%         Dimensions: grid_xt,grid_yt,pfull,time
-%         Dimensions: lon, lat,pfull,time
-U_850HPa_60lat = []; %pressure level = 23: 848.8 HPa
-U_500HPa_60lat = []; %pressure level = 18: 532.5 HPa
-U_10HPa_60lat = []; %pressure level = 3: 10.7 HPa
-days = (1:365);
-% Lat(75) = 59 deg
-% 
-for i = 1:20;
-    % The files are spread out in 20 different folders, this gets you to each of them
+
+        % ucomp = Size:       144x90x33x365
+        % Dimensions: grid_xt,grid_yt,pfull,time
+        % Dimensions: lon, lat,pfull,time
+
+        % Get initial values so we don't need to save more than we need
+    temp_path = strcat(AM4_Data_Path,num2str(1),'/dailyU.nc');
+    temp_u = ncread(temp_path,'ucomp');
+    
+    U_1 = temp_u(:,:,1:24,1:100);
+    clear temp_path temp_u
+    U_diff = zeros(19,144,90,24,100);
+for i = 2:20
+            
+            % The files are spread out in 20 different folders, this gets you to each of them
     temp_path = strcat(AM4_Data_Path,num2str(i),'/dailyU.nc');
     temp_u = ncread(temp_path,'ucomp');
-    % This creates three seperate i x 144 x 365 variables
-    % This could be done in a single variable, but then it would show up in
-    % your workspace as a 4-D double (gross!)
-    U_850HPa_60lat(i,:,:) = squeeze(temp_u(:,75,23,:));
-    U_500HPa_60lat(i,:,:) = squeeze(temp_u(:,75,18,:));
-    U_10HPa_60lat(i,:,:) = squeeze(temp_u(:,75,3,:));
+    
+            % subtract temp_u
+    U_diff(i-1,:,:,:,:) = temp_u(:,:,1:24,1:100) - U_1;
 end
-%% Index Matrix
-% Create an index of what to subtract from your base in each iteration, so
-% as to not include itself (not sure how much this effects it to start
-% with...)
-Index(1,:) = [2:20];
-Index(20,:) = [1:19];
-for i = 2:19
-    Index(i,:)=[1:i-1 i+1:20];
+    clear U_1 temp_u
+
+[Nrun,Nlat,Nlon,Np,Ntime] = size(U_diff);
+N_low_T = length(Lower_Tropo);
+N_Up_T = length(Upper_Tropo);
+N_Strat = length(Stratosphere);
+
+%%
+c = 'Color';
+c1 = ["#a1dab4","#41b6c4","#225ea8"];
+
+% GLOBAL
+    MainPlot = figure(1)
+    clf, hold on
+    plot_lt = plot(days, U_LT, c, c1(1)); 
+    plot_ut = plot(days, U_UT, c, c1(2));
+    plot_s = plot(days, U_S , c, c1(3));
+    plots = [plot_lt(1), plot_ut(1), plot_s(1)];
+    hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
+
+    axis([1 100 0 75]), title('Global RMS'), xlabel('Days'), ylabel('RMSE')
+
+    saveas(MainPlot,['./plots/RMS/Global.png'])
+
+% N_Hi
+    clear U_LT U_UT U_S
+    [U_LT,U_UT,U_S] = tripple_rms(N_Hi);
+    MainPlot = figure(1)
+    clf, hold on
+    plot_lt = plot(days, U_LT, c, c1(1)); 
+    plot_ut = plot(days, U_UT, c, c1(2));
+    plot_s = plot(days, U_S , c, c1(3));
+    plots = [plot_lt(1), plot_ut(1), plot_s(1)];
+    hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
+
+    axis([1 100 0 75]), title('North Hi-lat RMS'), xlabel('Days'), ylabel('RMSE')
+
+    saveas(MainPlot,['./plots/RMS/North_Hi.png'])
+    
+% N_Mid
+    clear U_LT U_UT U_S
+    [U_LT,U_UT,U_S] = tripple_rms(N_Mid);
+    MainPlot = figure(1)
+    clf, hold on
+    plot_lt = plot(days, U_LT, c, c1(1)); 
+    plot_ut = plot(days, U_UT, c, c1(2));
+    plot_s = plot(days, U_S , c, c1(3));
+    plots = [plot_lt(1), plot_ut(1), plot_s(1)];
+    hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
+
+    axis([1 100 0 75]), title('North Mid-lat RMS'), xlabel('Days'), ylabel('RMSE')
+
+    saveas(MainPlot,['./plots/RMS/North_Mid.png'])
+
+% Low_lat
+    clear U_LT U_UT U_S
+    [U_LT,U_UT,U_S] = tripple_rms(Equator);
+    MainPlot = figure(1)
+    clf, hold on
+    plot_lt = plot(days, U_LT, c, c1(1)); 
+    plot_ut = plot(days, U_UT, c, c1(2));
+    plot_s = plot(days, U_S , c, c1(3));
+    plots = [plot_lt(1), plot_ut(1), plot_s(1)];
+    hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
+
+    axis([1 100 0 75]), title('Low-lat RMS'), xlabel('Days'), ylabel('RMSE')
+
+    saveas(MainPlot,['./plots/RMS/Low.png'])
+
+% Mid_S_lat
+    clear U_LT U_UT U_S
+    [U_LT,U_UT,U_S] = tripple_rms(S_Mid);
+    MainPlot = figure(1)
+    clf, hold on
+    plot_lt = plot(days, U_LT, c, c1(1)); 
+    plot_ut = plot(days, U_UT, c, c1(2));
+    plot_s = plot(days, U_S , c, c1(3));
+    plots = [plot_lt(1), plot_ut(1), plot_s(1)];
+    hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
+
+    axis([1 100 0 75]), title('South Mid-lat RMS'), xlabel('Days'), ylabel('RMSE')
+
+    saveas(MainPlot,['./plots/RMS/South_Mid.png'])
+
+% High_S_lat
+    clear U_LT U_UT U_S
+    [U_LT,U_UT,U_S] = tripple_rms(S_Hi);
+    MainPlot = figure(1)
+    clf, hold on
+    plot_lt = plot(days, U_LT, c, c1(1)); 
+    plot_ut = plot(days, U_UT, c, c1(2));
+    plot_s = plot(days, U_S , c, c1(3));
+    plots = [plot_lt(1), plot_ut(1), plot_s(1)];
+    hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
+
+    axis([1 100 0 75]), title('South Hi-lat RMS'), xlabel('Days'), ylabel('RMSE')
+
+    saveas(MainPlot,['./plots/RMS/South_Hi.png'])
+
+
+%%
+
+function [U_LT,U_UT,U_S] = tripple_rms(range_temp)
+rng = length(range_temp);
+U_LT = squeeze(rms(reshape(...
+    U_diff(:,:,:,Lower_Tropo,:),Nrun,rng*Nlon*N_low_T,Ntime),2));
+U_UT = squeeze(rms(reshape(...
+    U_diff(:,:,:,Upper_Tropo,:),Nrun,rng*Nlon*N_Up_T,Ntime),2));
+U_S = squeeze(rms(reshape(...
+    U_diff(:,:,:,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
 end
-%%
-for i = 1:20
-    % This takes error between the base and the 19 alternatives for the
-    % first longitude bin, with is 1.25 deg
-    error = squeeze((U_850HPa_60lat(i,1,:)-U_850HPa_60lat(Index,1,:)));
-    % Gets the RMS of the error
-    rmserror = rms(error);
-    % Save the RMS error to the corresponding run
-    RMS850single(i,:)=rmserror;
-    
-    %Same as above, but this takes the zonal mean of the u_comp prior to
-    %calculating error
-    errormean = squeeze((mean(U_850HPa_60lat(i,:,:),2)-mean(U_850HPa_60lat(Index,1,:),2)));
-    rmserrormean = rms(errormean);
-    RMS850mean(i,:)=rmserrormean;
-    
-    %repeate for 500 Hpa, etc... 
-    error = squeeze((U_500HPa_60lat(i,1,:)-U_500HPa_60lat(Index,1,:)));
-    rmserror = rms(error);
-    RMS500single(i,:)=rmserror;
-    
-    errormean = squeeze((mean(U_500HPa_60lat(i,:,:),2)-mean(U_500HPa_60lat(Index,1,:),2)));
-    rmserrormean = rms(errormean);
-    RMS500mean(i,:)=rmserrormean;
-    
-    error = squeeze((U_10HPa_60lat(i,1,:)-U_10HPa_60lat(Index,1,:)));
-    rmserror = rms(error);
-    RMS10single(i,:)=rmserror;
-    
-    errormean = squeeze((mean(U_10HPa_60lat(i,:,:),2)-mean(U_10HPa_60lat(Index,1,:),2)));
-    rmserrormean = rms(errormean);
-    RMS10mean(i,:)=rmserrormean;
-end
-%%
-Single850 = figure(1);
-clf, hold on
-plot(days,RMS850single)
-axis([1 100 -inf inf])
-title('RMSE at 1.25 lon - 60 deg N - 850 HPa')
-xlabel('Days')
-ylabel('RMSE')
 
-saveas(Single850,['./plots/RMS/single_850.png'])
-%%
-All850 = figure(2);
-clf, hold on
-plot(days,RMS850mean)
-axis([1 100 -inf inf])
-title('Zonal Mean RMSE - 60 deg N - 850 HPa')
-xlabel('Days')
-ylabel('RMSE')
-
-saveas(All850,['./plots/RMS/all_850.png'])
-%%
-Single500 = figure(10);
-clf, hold on
-plot(days,RMS500single)
-axis([1 100 -inf inf])
-title('RMSE at 1.25 lon - 60 deg N - 500 HPa')
-xlabel('Days')
-ylabel('RMSE')
-
-
-saveas(Single500,['./plots/RMS/single_500.png'])
-%%
-All500 = figure(20);
-clf, hold on
-plot(days,RMS500mean)
-axis([1 100 -inf inf])
-title('Zonal Mean RMSE - 60 deg N - 500 HPa')
-xlabel('Days')
-ylabel('RMSE')
-
-saveas(All500,['./plots/RMS/all_500.png'])
-%%
-Single10 = figure(100);
-clf, hold on
-plot(days,RMS10single)
-axis([1 100 -inf inf])
-title('RMSE at 1.25 lon - 60 deg N - 10 HPa')
-xlabel('Days')
-ylabel('RMSE')
-
-saveas(Single10,['./plots/RMS/single_10.png'])
-%%
-All10 = figure(200);
-clf, hold on
-plot(days,RMS10mean)
-axis([1 100 -inf inf])
-title('Zonal Mean RMSE - 60 deg N - 10 HPa')
-xlabel('Days')
-ylabel('RMSE')
-
-saveas(All10,['./plots/RMS/all_10.png'])
