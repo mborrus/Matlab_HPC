@@ -6,7 +6,6 @@
 AM4_Data_Path = '/scratch/users/mborrus/Globus_data/gfdl.intel18-prod-openmp-extra/';
 mkdir plots         %where plots should go
 mkdir plots/RMS     %Where these specific plots should go
-global Nrun Nlon N_low_T Ntime U_diff Lower_Tropo Upper_Tropo Stratosphere
 
 %%
 
@@ -55,7 +54,7 @@ for i = 2:20
 end
     clear U_1 temp_u
 
-[Nrun,Nlat,Nlon,Np,Ntime] = size(U_diff);
+[Nrun,Nlon,Nlat,Np,Ntime] = size(U_diff);
 N_low_T = length(Lower_Tropo);
 N_Up_T = length(Upper_Tropo);
 N_Strat = length(Stratosphere);
@@ -65,6 +64,12 @@ c = 'Color';
 c1 = ["#a1dab4","#41b6c4","#225ea8"];
 
 % GLOBAL
+        
+        range_temp = 1:90; rng = length(range_temp);
+        U_LT = squeeze(rms(reshape(U_diff(:,:,range_temp,Lower_Tropo,:), Nrun,rng*Nlon*N_low_T,Ntime),2));
+        U_UT = squeeze(rms(reshape(U_diff(:,:,range_temp,Upper_Tropo,:), Nrun,rng*Nlon*N_Up_T,Ntime),2));
+        U_S =  squeeze(rms(reshape(U_diff(:,:,range_temp,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
+        
     MainPlot = figure(1)
     clf, hold on
     plot_lt = plot(days, U_LT, c, c1(1)); 
@@ -78,8 +83,11 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     saveas(MainPlot,['./plots/RMS/Global.png'])
 
 % N_Hi
-    clear U_LT U_UT U_S
-    [U_LT,U_UT,U_S] = tripple_rms(N_Hi);
+        clear U_LT U_UT U_S
+        range_temp = N_Hi; rng = length(range_temp);
+        U_LT = squeeze(rms(reshape(U_diff(:,:,range_temp,Lower_Tropo,:), Nrun,rng*Nlon*N_low_T,Ntime),2));
+        U_UT = squeeze(rms(reshape(U_diff(:,:,range_temp,Upper_Tropo,:), Nrun,rng*Nlon*N_Up_T,Ntime),2));
+        U_S =  squeeze(rms(reshape(U_diff(:,:,range_temp,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
     MainPlot = figure(1)
     clf, hold on
     plot_lt = plot(days, U_LT, c, c1(1)); 
@@ -93,8 +101,11 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     saveas(MainPlot,['./plots/RMS/North_Hi.png'])
     
 % N_Mid
-    clear U_LT U_UT U_S
-    [U_LT,U_UT,U_S] = tripple_rms(N_Mid);
+        clear U_LT U_UT U_S
+        range_temp = N_Mid; rng = length(range_temp);
+        U_LT = squeeze(rms(reshape(U_diff(:,:,range_temp,Lower_Tropo,:), Nrun,rng*Nlon*N_low_T,Ntime),2));
+        U_UT = squeeze(rms(reshape(U_diff(:,:,range_temp,Upper_Tropo,:), Nrun,rng*Nlon*N_Up_T,Ntime),2));
+        U_S =  squeeze(rms(reshape(U_diff(:,:,range_temp,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
     MainPlot = figure(1)
     clf, hold on
     plot_lt = plot(days, U_LT, c, c1(1)); 
@@ -108,8 +119,11 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     saveas(MainPlot,['./plots/RMS/North_Mid.png'])
 
 % Low_lat
-    clear U_LT U_UT U_S
-    [U_LT,U_UT,U_S] = tripple_rms(Equator);
+        clear U_LT U_UT U_S
+        range_temp = Equator; rng = length(range_temp);
+        U_LT = squeeze(rms(reshape(U_diff(:,:,range_temp,Lower_Tropo,:), Nrun,rng*Nlon*N_low_T,Ntime),2));
+        U_UT = squeeze(rms(reshape(U_diff(:,:,range_temp,Upper_Tropo,:), Nrun,rng*Nlon*N_Up_T,Ntime),2));
+        U_S =  squeeze(rms(reshape(U_diff(:,:,range_temp,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
     MainPlot = figure(1)
     clf, hold on
     plot_lt = plot(days, U_LT, c, c1(1)); 
@@ -123,8 +137,11 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     saveas(MainPlot,['./plots/RMS/Low.png'])
 
 % Mid_S_lat
-    clear U_LT U_UT U_S
-    [U_LT,U_UT,U_S] = tripple_rms(S_Mid);
+        clear U_LT U_UT U_S
+        range_temp = S_Mid; rng = length(range_temp);
+        U_LT = squeeze(rms(reshape(U_diff(:,:,range_temp,Lower_Tropo,:), Nrun,rng*Nlon*N_low_T,Ntime),2));
+        U_UT = squeeze(rms(reshape(U_diff(:,:,range_temp,Upper_Tropo,:), Nrun,rng*Nlon*N_Up_T,Ntime),2));
+        U_S =  squeeze(rms(reshape(U_diff(:,:,range_temp,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
     MainPlot = figure(1)
     clf, hold on
     plot_lt = plot(days, U_LT, c, c1(1)); 
@@ -138,8 +155,11 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     saveas(MainPlot,['./plots/RMS/South_Mid.png'])
 
 % High_S_lat
-    clear U_LT U_UT U_S
-    [U_LT,U_UT,U_S] = tripple_rms(S_Hi);
+        clear U_LT U_UT U_S
+        range_temp = S_Hi; rng = length(range_temp);
+        U_LT = squeeze(rms(reshape(U_diff(:,:,range_temp,Lower_Tropo,:), Nrun,rng*Nlon*N_low_T,Ntime),2));
+        U_UT = squeeze(rms(reshape(U_diff(:,:,range_temp,Upper_Tropo,:), Nrun,rng*Nlon*N_Up_T,Ntime),2));
+        U_S =  squeeze(rms(reshape(U_diff(:,:,range_temp,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
     MainPlot = figure(1)
     clf, hold on
     plot_lt = plot(days, U_LT, c, c1(1)); 
@@ -154,15 +174,4 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
 
 
 %%
-
-function [U_LT,U_UT,U_S] = tripple_rms(range_temp)
-global Nrun Nlon N_low_T Ntime U_diff Lower_Tropo Upper_Tropo Stratosphere
-rng = length(range_temp);
-U_LT = squeeze(rms(reshape(...
-    U_diff(:,:,:,Lower_Tropo,:),Nrun,rng*Nlon*N_low_T,Ntime),2));
-U_UT = squeeze(rms(reshape(...
-    U_diff(:,:,:,Upper_Tropo,:),Nrun,rng*Nlon*N_Up_T,Ntime),2));
-U_S = squeeze(rms(reshape(...
-    U_diff(:,:,:,Stratosphere,:),Nrun,rng*Nlon*N_Strat,Ntime),2));
-end
 
