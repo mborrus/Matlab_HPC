@@ -6,6 +6,7 @@
 AM4_Data_Path = '/scratch/users/mborrus/Globus_data/gfdl.intel18-prod-openmp-extra/';
 mkdir plots         %where plots should go
 mkdir plots/RMS     %Where these specific plots should go
+global Nrun Nlon N_low_T Ntime U_diff Lower_Tropo Upper_Tropo Stratosphere
 
 %%
 
@@ -155,6 +156,7 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
 %%
 
 function [U_LT,U_UT,U_S] = tripple_rms(range_temp)
+global Nrun Nlon N_low_T Ntime U_diff Lower_Tropo Upper_Tropo Stratosphere
 rng = length(range_temp);
 U_LT = squeeze(rms(reshape(...
     U_diff(:,:,:,Lower_Tropo,:),Nrun,rng*Nlon*N_low_T,Ntime),2));
