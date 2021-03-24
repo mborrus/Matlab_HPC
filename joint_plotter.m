@@ -10,10 +10,18 @@ temp_path = strcat(AM4_Data_Path,num2str(File_Numbers(1)),'/dailyT_U_SH_O.nc');
 lat_AM4 = ncread(temp_path,'grid_yt');
 days = (1:100);
 
-load('/scratch/users/mborrus/dycore/h0_EGR_N2/dycore_EGR_N2_00.mat')
-egr_mean_h0 = egr_mean;
-load('/scratch/users/mborrus/dycore/h4000_EGR_N2/h4000_EGR_N2_00.mat')
+load('./data/EGR/dycore/h0_EGR_N2.mat')
+egr_mean_h0 = egr_mean; %'egr_mean','N2_mean','dtheta_z','du_z')
+N2_mean_h0 = N2_mean;
+dtheta_z_h0 = dtheta_z;
+du_z_h0 = du_z;
+
+load('./data/EGR/dycore/h4000_EGR_N2.mat')
 egr_mean_h4000 = egr_mean;
+N2_mean_h4000 = N2_mean;
+dtheta_z_h4000 = dtheta_z;
+du_z_h4000 = du_z;
+
 load('./data/axis_stuff_64.mat')
 lat_dy = lat;
 N_Mid_dy = find(lat_dy > 40 & lat_dy < 70);
