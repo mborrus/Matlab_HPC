@@ -6,15 +6,11 @@ cd '/home/users/mborrus/Matlab_HPC'
 load('./data/axis_stuff_64.mat','lat','lon', 'P')
 mkdir data/EGR/dycore
 
-OutputNumber = ['00','01'];
-DycoreRun = ['h0','h4000'];
-prompt = 'Run for h0 (1) or h4000 (2)?';
-x = input(prompt)
-DycoreRun_Choice=x;
+OutputNumber = ["0","10"];
+DycoreRun = ["h0","h4000"];
+DycoreRun_Choice=2;
 
 dycore_Data_Path = '/scratch/users/mborrus/dycore/';
-
-load('/scratch/users/mborrus/dycore/h0_EGR_N2/dycore_EGR_N2_00.mat')
 
 days = (1:100);
 Pressure_range = find(P<950 & P>450);
@@ -29,8 +25,8 @@ g = 9.8;
 
 
 for run_N = 1:length(OutputNumber)
-T = load([dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/',OutputNumber(run_N),'/T_interp_01.mat'],'T_interp_01'); 
-u = load([dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/',OutputNumber(run_N),'/u_interp_01.mat'],'u_interp_01'); 
+T = load(strcat(dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/ary',OutputNumber(run_N),'/T_interp_01.mat'),'T_interp_01'); 
+u = load(strcat(dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/ary',OutputNumber(run_N),'/u_interp_01.mat'),'u_interp_01'); 
 %%
 %cut off the top 6 layers of atmosphere
 T  = T.T_interp_01(:,:,34:40,:); %pressure from 450hb to 950hb
@@ -87,15 +83,16 @@ end
 %%
 % Eady growth rate
 for i = 1:la
-    egr(run_N,i,:,:) = abs(f(i)*du_z(i,:,:)./sqrt(N2(run_N,i,:,:)));
+    egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(i,:,:))./sqrt(squeeze(N2(run_N,i,:,:))));
 end
+
 %%
 end
 
 egr_mean = squeeze(nanmean(egr,3));
 N2_mean = squeeze(nanmean(N2,3));
 
-save(['./data/EGR/dycore/',DycoreRun(DycoreRun_Choice),'_EGR_N2.mat'], 'egr_mean','N2_mean','dtheta_z','du_z')
+save(strcat('./data/EGR/dycore/',DycoreRun(DycoreRun_Choice),'_EGR_N2.mat'), 'egr_mean','N2_mean','dtheta_z','du_z')
 
 
 

@@ -6,9 +6,7 @@ AM4_Data_Path = '/oak/stanford/schools/ees/aditis2/Globus_data/gfdl.intel18-prod
 mkdir data/EGR/AM4
 
 %%
-prompt = 'Do you want plots? 1 = yes, 0 = no';
-x = input(prompt)
-ploton = x; 
+ploton = 0; 
 % Get the pressure and lats values
 File_Numbers=[2,4];
 

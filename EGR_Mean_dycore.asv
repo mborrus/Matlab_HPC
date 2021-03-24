@@ -6,13 +6,11 @@ cd '/home/users/mborrus/Matlab_HPC'
 load('./data/axis_stuff_64.mat','lat','lon', 'P')
 mkdir data/EGR/dycore
 
-OutputNumber = ['00','01'];
-DycoreRun = ['h0','h4000'];
+OutputNumber = ["0","10"];
+DycoreRun = ["h0","h4000"];
 DycoreRun_Choice=1;
 
 dycore_Data_Path = '/scratch/users/mborrus/dycore/';
-
-load('/scratch/users/mborrus/dycore/h0_EGR_N2/dycore_EGR_N2_00.mat')
 
 days = (1:100);
 Pressure_range = find(P<950 & P>450);
@@ -27,8 +25,8 @@ g = 9.8;
 
 
 for run_N = 1:length(OutputNumber)
-T = load([dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/',OutputNumber(run_N),'/T_interp_01.mat'],'T_interp_01'); 
-u = load([dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/',OutputNumber(run_N),'/u_interp_01.mat'],'u_interp_01'); 
+T = load(strcat(dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/ary',OutputNumber(run_N),'/T_interp_01.mat'),'T_interp_01'); 
+u = load(strcat(dycore_Data_Path,DycoreRun(DycoreRun_Choice),'/ary',OutputNumber(run_N),'/u_interp_01.mat'),'u_interp_01'); 
 %%
 %cut off the top 6 layers of atmosphere
 T  = T.T_interp_01(:,:,34:40,:); %pressure from 450hb to 950hb
@@ -85,31 +83,19 @@ end
 %%
 % Eady growth rate
 for i = 1:la
-    egr(i,:,:) = abs(f(i)*du_z(i,:,:)./sqrt(N2(i,:,:)));
+    egr(run_N,i,:,:) = abs(f(i)*du_z(i,:,:)./sqrt(N2(run_N,i,:,:)));
 end
+
+for i = 1:la
+        DRY_egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(i,:,:))./sqrt(squeeze(DRY_N2(run_N,i,:,:))));
+    end
 %%
 end
 
-egr_mean = squeeze(nanmean(egr,2));
-N2_mean = squeeze(nanmean(N2,2));
+egr_mean = squeeze(nanmean(egr,3));
+N2_mean = squeeze(nanmean(N2,3));
 
- DRY_egr_mean = squeeze(mean(DRY_egr,3));
-    DRY_N2_mean = squeeze(mean(DRY_N2,3));
-
-    MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
-    MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
-    
-    DRY_dtheta_z = dtheta_z;
-    MOIST_dtheta_z = dtheta_dp_eff;
-    save(['./data/EGR/AM4/AM4_EGR.mat'], 'DRY_egr_mean','DRY_N2_mean','DRY_dtheta_z','du_z','MOIST_dtheta_z','MOIST_egr_mean','MOIST_N2_mean')
-    
-    
-    
-
-%%
-save(['h4000_EGR_N2_',OutputNumber,'.mat'], 'egr_mean','N2_mean')
-
-
+save(strcat('./data/EGR/dycore/',DycoreRun(DycoreRun_Choice),'_EGR_N2.mat'), 'egr_mean','N2_mean','dtheta_z','du_z')
 
 
 
