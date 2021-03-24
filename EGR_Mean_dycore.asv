@@ -8,9 +8,7 @@ mkdir data/EGR/dycore
 
 OutputNumber = ['00','01'];
 DycoreRun = ['h0','h4000'];
-prompt = 'Run for h0 (1) or h4000 (2)?';
-x = input(prompt)
-DycoreRun_Choice=x;
+DycoreRun_Choice=1;
 
 dycore_Data_Path = '/scratch/users/mborrus/dycore/';
 
@@ -87,15 +85,31 @@ end
 %%
 % Eady growth rate
 for i = 1:la
-    egr(run_N,i,:,:) = abs(f(i)*du_z(i,:,:)./sqrt(N2(run_N,i,:,:)));
+    egr(i,:,:) = abs(f(i)*du_z(i,:,:)./sqrt(N2(i,:,:)));
 end
 %%
 end
 
-egr_mean = squeeze(nanmean(egr,3));
-N2_mean = squeeze(nanmean(N2,3));
+egr_mean = squeeze(nanmean(egr,2));
+N2_mean = squeeze(nanmean(N2,2));
 
-save(['./data/EGR/dycore/',DycoreRun(DycoreRun_Choice),'_EGR_N2.mat'], 'egr_mean','N2_mean','dtheta_z','du_z')
+ DRY_egr_mean = squeeze(mean(DRY_egr,3));
+    DRY_N2_mean = squeeze(mean(DRY_N2,3));
+
+    MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
+    MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
+    
+    DRY_dtheta_z = dtheta_z;
+    MOIST_dtheta_z = dtheta_dp_eff;
+    save(['./data/EGR/AM4/AM4_EGR.mat'], 'DRY_egr_mean','DRY_N2_mean','DRY_dtheta_z','du_z','MOIST_dtheta_z','MOIST_egr_mean','MOIST_N2_mean')
+    
+    
+    
+
+%%
+save(['h4000_EGR_N2_',OutputNumber,'.mat'], 'egr_mean','N2_mean')
+
+
 
 
 
