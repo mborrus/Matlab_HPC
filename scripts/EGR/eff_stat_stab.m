@@ -1,4 +1,4 @@
-function dtheta_dp_eff = eff_stat_stab(p, temp, lambda)
+function dtheta_dz_eff = eff_stat_stab(p, temp, lambda)
 
 % calculates the effective static stability derived in O'Gorman, JAS, 2011, pages 75-90 according to equation 8 
 %
@@ -26,6 +26,7 @@ function dtheta_dp_eff = eff_stat_stab(p, temp, lambda)
  p0       = 1e5;         % reference pressure [Pa]
  kappa    = Rd/cpd;
  gc_ratio = Rd/Rv;
+ z = 
 
  % saturation vapor pressure [Pa]
  Tc = temp-273.15;
@@ -63,4 +64,5 @@ function dtheta_dp_eff = eff_stat_stab(p, temp, lambda)
 
  % effective static stability following equation 8 of O'Gorman, JAS, 2011
  dtheta_dp_eff = dtheta_dp-lambda.*dtheta_dp_ma;
+ dtheta_dz_eff = dtheta_dp_eff./(-g.*rho);
 

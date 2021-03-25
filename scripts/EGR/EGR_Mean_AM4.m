@@ -14,7 +14,7 @@ temp_path = strcat(AM4_Data_Path,num2str(File_Numbers(1)),'/dailyT_U_SH_O.nc');
 pressure_levels = ncread(temp_path,'pfull');
 lat = ncread(temp_path,'grid_yt');
 days = (1:100);
-Pressure_range = find(pressure_levels<950 & pressure_levels>450);
+Pressure_range = find(pressure_levels<950 & pressure_levels>200);
 p = pressure_levels(Pressure_range); 
 
 H = 7300; % scale height, m
@@ -40,71 +40,83 @@ for run_N = 1:length(File_Numbers)
     u = squeeze(mean(u(:,:,:,:),1)); %average across longitude
     [la pr d] = size(u);
     
-    pressure_term = (1000./p).^(2/7);
-    theta = zeros(la, pr, d);
-    for j = 1:pr
-        theta(:,j,:) = T(:,j,:).*pressure_term(j);
-    end
-    
-    dtheta_z = zeros(la, pr, d);
-    du_z = zeros(la, pr, d);
-
-    for i=2:pr-1
-    dtheta_z(:,i,:) = (theta(:,i+1,:)-theta(:,i-1,:))/...
-        (z(i+1)-z(i-1));
-    du_z(:,i,:) = (u(:,i+1,:)-u(:,i-1,:))/...
-        (z(i+1)-z(i-1));
-    end
-    
-    dtheta_z(:,1,:) = (theta(:,2,:)-theta(:,1,:))/(z(2)-z(1));
-    dtheta_z(:,pr,:) = (theta(:,pr,:)-theta(:,pr-1,:))/(z(pr)-z(pr-1));
-    du_z(:,1,:) = (u(:,2,:)-u(:,1,:))/(z(2)-z(1));
-    du_z(:,pr,:) = (u(:,pr,:)-u(:,pr-1,:))/(z(pr)-z(pr-1));
-    
-    if exist('DRY_N2') == 0;
+    if exist('theta') == 0;
+        theta = zeros(length(File_Numbers),la, pr, d);
+        dtheta_z = zeros(length(File_Numbers),la, pr, d);
+        dtheta_p = zeros(length(File_Numbers),la, pr, d);
+        du_z = zeros(length(File_Numbers),la, pr, d);
         DRY_N2 = zeros(length(File_Numbers),la,pr,d);
         DRY_egr = zeros(length(File_Numbers),la,pr,d);
         MOIST_N2 = zeros(length(File_Numbers),la,pr,d);
         MOIST_egr = zeros(length(File_Numbers),la,pr,d);
-        "vars created"
+        dtheta_dp_eff = zeros(length(File_Numbers),la,pr,d);
+            "vars created"
     else
-        "vars already exist"
+            "vars already exist"
     end
     
+    pressure_term = (1000./p).^(2/7);
+    
+    for j = 1:pr
+        theta(run_N,:,j,:) = T(:,j,:).*pressure_term(j);       
+    end
+            "theta ran"
+    Rd       = 287.04;      % gas constant for dry air [J/kg/K]
+    rho = p/Rd./temp_virtual;
+
+    for i=2:pr-1
+    dtheta_z(run_N,:,i,:) = (theta(run_N,:,i+1,:)-theta(run_N,:,i-1,:))/...
+        (z(i+1)-z(i-1));
+    du_z(run_N,:,i,:) = (u(:,i+1,:)-u(:,i-1,:))/...
+        (z(i+1)-z(i-1));
+    dtheta_p(run_N,:,i,:) = (theta(run_N,:,i+1,:)-theta(run_N,:,i-1,:))/...
+        (p(i+1)-p(i-1));         
+    end
+            "derivatives ran"
+    
+    dtheta_p(run_N,:,1,:) = (theta(run_N,:,2,:)-theta(run_N,:,1,:))/(p(2)-p(1));
+    dtheta_p(run_N,:,pr,:) = (theta(run_N,:,pr,:)-theta(run_N,:,pr-1,:))/(p(pr)-p(pr-1));
+    dtheta_z(run_N,:,1,:) = (theta(run_N,:,2,:)-theta(run_N,:,1,:))/(z(2)-z(1));
+    dtheta_z(run_N,:,pr,:) = (theta(run_N,:,pr,:)-theta(run_N,:,pr-1,:))/(z(pr)-z(pr-1));
+    du_z(run_N,:,1,:) = (u(:,2,:)-u(:,1,:))/(z(2)-z(1));
+    du_z(run_N,:,pr,:) = (u(:,pr,:)-u(:,pr-1,:))/(z(pr)-z(pr-1));
+    
+    
+    
     for i=1:pr
-        DRY_N2(run_N,:,i,:) = (g./theta(:,i,:)) .* dtheta_z(:,i,:);
+        DRY_N2(run_N,:,i,:) = (g./theta(run_N,:,i,:)) .* dtheta_z(run_N,:,i,:);
     end
     
     for i = 1:la
-        DRY_egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(i,:,:))./sqrt(squeeze(DRY_N2(run_N,i,:,:))));
+        DRY_egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(run_N,i,:,:))./sqrt(squeeze(DRY_N2(run_N,i,:,:))));
     end
     
-    dtheta_dp_eff = zeros(la,pr,d);
     for lat_N = 1:la
         for day_N = 1:d
-            dtheta_dp_eff(lat_N,:,day_N) = eff_stat_stab(p', T(lat_N,:,day_N), lambda);
+            dtheta_dp_eff(run_N,lat_N,:,day_N) = eff_stat_stab(p', T(lat_N,:,day_N), lambda);
         end
     end
     
     for i=1:pr
-        MOIST_N2(run_N,:,i,:) = (g./theta(:,i,:)) .* dtheta_dp_eff(:,i,:);
+        MOIST_N2(run_N,:,i,:) = (g./theta(run_N,:,i,:)) .* dtheta_dp_eff(run_N,:,i,:);
     end
     
     for i = 1:la
-        MOIST_egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(i,:,:))./sqrt(squeeze(MOIST_N2(run_N,i,:,:))));
+        MOIST_egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(run_N,i,:,:))./sqrt(squeeze(MOIST_N2(run_N,i,:,:))));
     end
     
 end
 
-    DRY_egr_mean = squeeze(mean(DRY_egr,3));
-    DRY_N2_mean = squeeze(mean(DRY_N2,3));
-
-    MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
-    MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
-    
-    DRY_dtheta_z = dtheta_z;
-    MOIST_dtheta_z = dtheta_dp_eff;
-    save(['./data/EGR/AM4/AM4_EGR.mat'], 'DRY_egr_mean','DRY_N2_mean','DRY_dtheta_z','du_z','MOIST_dtheta_z','MOIST_egr_mean','MOIST_N2_mean')
+%     DRY_egr_mean = squeeze(mean(DRY_egr,3));
+%     DRY_N2_mean = squeeze(mean(DRY_N2,3));
+% 
+%     MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
+%     MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
+%     
+%     DRY_dtheta_z = dtheta_z;
+%     MOIST_dtheta_z = dtheta_dp_eff;
+%     save(['./data/EGR/AM4/AM4_EGR.mat'], 'DRY_egr_mean','DRY_N2_mean','DRY_dtheta_z','du_z','MOIST_dtheta_z','MOIST_egr_mean','MOIST_N2_mean')
+    save(['./data/EGR/AM4/AM4_EGR.mat'], 'lat', 'p', 'theta','dtheta_z','dtheta_p','du_z','DRY_N2', 'DRY_egr','MOIST_N2','MOIST_egr','dtheta_dp_eff');
     
     
     
