@@ -2,11 +2,12 @@
 % Script to be run in sherlock to make plots
 % Marshall Borrus
 cd '/home/users/mborrus/Matlab_HPC'
+cd('/home/users/mborrus/Matlab_HPC/scripts/EGR')
 AM4_Data_Path = '/oak/stanford/schools/ees/aditis2/Globus_data/gfdl.intel18-prod-openmp-extra/';
 mkdir data/EGR/AM4
 
 %%
-ploton = 0; 
+ploton = 1; 
 % Get the pressure and lats values
 File_Numbers=[2,4];
 
@@ -26,6 +27,7 @@ g = 9.8;
 lambda =.6;
 
 for run_N = 1:length(File_Numbers)
+%for run_N = 1
 
     temp_path = strcat(AM4_Data_Path,num2str(File_Numbers(run_N)),'/dailyT_U_SH_O.nc');
     
@@ -49,7 +51,7 @@ for run_N = 1:length(File_Numbers)
         DRY_egr = zeros(length(File_Numbers),la,pr,d);
         MOIST_N2 = zeros(length(File_Numbers),la,pr,d);
         MOIST_egr = zeros(length(File_Numbers),la,pr,d);
-        dtheta_dp_eff = zeros(length(File_Numbers),la,pr,d);
+        dtheta_dz_eff = zeros(length(File_Numbers),la,pr,d);
             "vars created"
     else
             "vars already exist"
@@ -61,8 +63,6 @@ for run_N = 1:length(File_Numbers)
         theta(run_N,:,j,:) = T(:,j,:).*pressure_term(j);       
     end
             "theta ran"
-    Rd       = 287.04;      % gas constant for dry air [J/kg/K]
-    rho = p/Rd./temp_virtual;
 
     for i=2:pr-1
     dtheta_z(run_N,:,i,:) = (theta(run_N,:,i+1,:)-theta(run_N,:,i-1,:))/...
@@ -91,14 +91,15 @@ for run_N = 1:length(File_Numbers)
         DRY_egr(run_N,i,:,:) = abs(f(i)*squeeze(du_z(run_N,i,:,:))./sqrt(squeeze(DRY_N2(run_N,i,:,:))));
     end
     
+    
     for lat_N = 1:la
         for day_N = 1:d
-            dtheta_dp_eff(run_N,lat_N,:,day_N) = eff_stat_stab(p', T(lat_N,:,day_N), lambda);
+            dtheta_dz_eff(run_N,lat_N,:,day_N) = eff_stat_stab(p', T(lat_N,:,day_N), lambda);
         end
     end
     
     for i=1:pr
-        MOIST_N2(run_N,:,i,:) = (g./theta(run_N,:,i,:)) .* dtheta_dp_eff(run_N,:,i,:);
+        MOIST_N2(run_N,:,i,:) = (g./theta(run_N,:,i,:)) .* dtheta_dz_eff(run_N,:,i,:);
     end
     
     for i = 1:la
@@ -107,11 +108,11 @@ for run_N = 1:length(File_Numbers)
     
 end
 
-%     DRY_egr_mean = squeeze(mean(DRY_egr,3));
-%     DRY_N2_mean = squeeze(mean(DRY_N2,3));
+     DRY_egr_mean = squeeze(mean(DRY_egr,3));
+     DRY_N2_mean = squeeze(mean(DRY_N2,3));
 % 
-%     MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
-%     MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
+     MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
+     MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
 %     
 %     DRY_dtheta_z = dtheta_z;
 %     MOIST_dtheta_z = dtheta_dp_eff;

@@ -26,7 +26,6 @@ function dtheta_dz_eff = eff_stat_stab(p, temp, lambda)
  p0       = 1e5;         % reference pressure [Pa]
  kappa    = Rd/cpd;
  gc_ratio = Rd/Rv;
- z = 
 
  % saturation vapor pressure [Pa]
  Tc = temp-273.15;
