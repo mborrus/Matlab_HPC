@@ -1,4 +1,4 @@
-function dtheta_dz_eff = eff_stat_stab(p, temp, lambda)
+function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
 
 % calculates the effective static stability derived in O'Gorman, JAS, 2011, pages 75-90 according to equation 8 
 %
