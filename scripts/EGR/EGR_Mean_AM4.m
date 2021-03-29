@@ -16,7 +16,8 @@ pressure_levels = ncread(temp_path,'pfull');
 lat = ncread(temp_path,'grid_yt');
 days = (1:100);
 Pressure_range = find(pressure_levels<950 & pressure_levels>200);
-p = pressure_levels(Pressure_range); 
+p = pressure_levels(Pressure_range);
+pa = p*100;
 
 H = 7300; % scale height, m
 z = -H*log(p/1000);
@@ -76,12 +77,12 @@ for run_N = 1:length(File_Numbers)
     du_z(run_N,:,i,:) = (u(:,i+1,:)-u(:,i-1,:))/...
         (z(i+1)-z(i-1));
     dtheta_p(run_N,:,i,:) = (theta(run_N,:,i+1,:)-theta(run_N,:,i-1,:))/...
-        (p(i+1)-p(i-1));         
+        (pa(i+1)-pa(i-1));         
     end
             "derivatives ran"
     
-    dtheta_p(run_N,:,1,:) = (theta(run_N,:,2,:)-theta(run_N,:,1,:))/(p(2)-p(1));
-    dtheta_p(run_N,:,pr,:) = (theta(run_N,:,pr,:)-theta(run_N,:,pr-1,:))/(p(pr)-p(pr-1));
+    dtheta_p(run_N,:,1,:) = (theta(run_N,:,2,:)-theta(run_N,:,1,:))/(pa(2)-pa(1));
+    dtheta_p(run_N,:,pr,:) = (theta(run_N,:,pr,:)-theta(run_N,:,pr-1,:))/(pa(pr)-pa(pr-1));
     dtheta_z(run_N,:,1,:) = (theta(run_N,:,2,:)-theta(run_N,:,1,:))/(z(2)-z(1));
     dtheta_z(run_N,:,pr,:) = (theta(run_N,:,pr,:)-theta(run_N,:,pr-1,:))/(z(pr)-z(pr-1));
     du_z(run_N,:,1,:) = (u(:,2,:)-u(:,1,:))/(z(2)-z(1));
@@ -100,7 +101,7 @@ for run_N = 1:length(File_Numbers)
     
     for lat_N = 1:la
         for day_N = 1:d
-            [dtheta_dz_eff(run_N,lat_N,:,day_N),dtheta_dp_eff(run_N,lat_N,:,day_N)] = eff_stat_stab(p', T(lat_N,:,day_N), lambda);
+            [dtheta_dz_eff(run_N,lat_N,:,day_N),dtheta_dp_eff(run_N,lat_N,:,day_N)] = eff_stat_stab(pa', T(lat_N,:,day_N), lambda);
         end
     end
     

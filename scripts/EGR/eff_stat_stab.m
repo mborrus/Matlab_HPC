@@ -3,7 +3,7 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
 % calculates the effective static stability derived in O'Gorman, JAS, 2011, pages 75-90 according to equation 8 
 %
 % inputs are 1d vertical profiles of pressure and temperature and the asymmetry parameter lambda (default value 0.6):
-% p       pressure (Pa)
+% p       pressure (hPa)
 % temp    temperature (K)
 % lambda  asymmetry parameter defined by equation 5 of O'Gorman, JAS, 2011
 
@@ -64,5 +64,4 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
  % effective static stability following equation 8 of O'Gorman, JAS, 2011
  dtheta_dp_eff = dtheta_dp-lambda.*dtheta_dp_ma;
  dtheta_dz_eff_g = dtheta_dp_eff/(-g);
- "test"
  dtheta_dz_eff = dtheta_dz_eff_g./rho;
