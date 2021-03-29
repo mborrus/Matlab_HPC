@@ -3,7 +3,7 @@
 % Marshall Borrus
 % This is where the data is held
 
-Dycore_Data_Path = '/scratch/users/mborrus/h0/';
+Dycore_Data_Path = '/scratch/users/mborrus/dycore/h4000';
 cd /home/users/mborrus/Matlab_HPC
 mkdir plots/RMS     %Where these specific plots should go
 
@@ -83,9 +83,9 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     plots = [plot_lt(1), plot_ut(1), plot_s(1)];
     hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
 
-    axis([1 100 0 75]), title('Global RMS - Dycore h0'), xlabel('Days'), ylabel('RMSE')
+    axis([1 100 0 75]), title('Global RMS - Dycore h4000'), xlabel('Days'), ylabel('RMSE')
 
-    saveas(MainPlot,['./plots/RMS/Global_h0.png'])
+    saveas(MainPlot,['./plots/RMS/Global_h4000.png'])
 
 % N_Hi
         clear U_LT U_UT U_S
@@ -101,9 +101,9 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     plots = [plot_lt(1), plot_ut(1), plot_s(1)];
     hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
 
-    axis([1 100 0 75]), title('North Hi-lat RMS - Dycore h0'), xlabel('Days'), ylabel('RMSE')
+    axis([1 100 0 75]), title('North Hi-lat RMS - Dycore h4000'), xlabel('Days'), ylabel('RMSE')
 
-    saveas(MainPlot,['./plots/RMS/North_Hi_h0.png'])
+    saveas(MainPlot,['./plots/RMS/North_Hi_h4000.png'])
     
 % N_Mid
         clear U_LT U_UT U_S
@@ -119,9 +119,9 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     plots = [plot_lt(1), plot_ut(1), plot_s(1)];
     hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
 
-    axis([1 100 0 75]), title('North Mid-lat RMS - Dycore h0'), xlabel('Days'), ylabel('RMSE')
+    axis([1 100 0 75]), title('North Mid-lat RMS - Dycore h4000'), xlabel('Days'), ylabel('RMSE')
 
-    saveas(MainPlot,['./plots/RMS/North_Mid_h0.png'])
+    saveas(MainPlot,['./plots/RMS/North_Mid_h4000.png'])
 
 % Low_lat
         clear U_LT U_UT U_S
@@ -137,9 +137,9 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     plots = [plot_lt(1), plot_ut(1), plot_s(1)];
     hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
 
-    axis([1 100 0 75]), title('Low-lat RMS - Dycore h0'), xlabel('Days'), ylabel('RMSE')
+    axis([1 100 0 75]), title('Low-lat RMS - Dycore h4000'), xlabel('Days'), ylabel('RMSE')
 
-    saveas(MainPlot,['./plots/RMS/Low_h0.png'])
+    saveas(MainPlot,['./plots/RMS/Low_h4000.png'])
 
 % Mid_S_lat
         clear U_LT U_UT U_S
@@ -155,9 +155,9 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     plots = [plot_lt(1), plot_ut(1), plot_s(1)];
     hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
 
-    axis([1 100 0 75]), title('South Mid-lat RMS - Dycore h0'), xlabel('Days'), ylabel('RMSE')
+    axis([1 100 0 75]), title('South Mid-lat RMS - Dycore h4000'), xlabel('Days'), ylabel('RMSE')
 
-    saveas(MainPlot,['./plots/RMS/South_Mid_h0.png'])
+    saveas(MainPlot,['./plots/RMS/South_Mid_h4000.png'])
 
 % High_S_lat
         clear U_LT U_UT U_S
@@ -173,9 +173,9 @@ c1 = ["#a1dab4","#41b6c4","#225ea8"];
     plots = [plot_lt(1), plot_ut(1), plot_s(1)];
     hleg = legend(plots,'Lower Troposphere','Upper Troposphere','Stratosphere');
 
-    axis([1 100 0 75]), title('South Hi-lat RMS - Dycore h0'), xlabel('Days'), ylabel('RMSE')
+    axis([1 100 0 75]), title('South Hi-lat RMS - Dycore h4000'), xlabel('Days'), ylabel('RMSE')
 
-    saveas(MainPlot,['./plots/RMS/South_Hi_h0.png'])
+    saveas(MainPlot,['./plots/RMS/South_Hi_h4000.png'])
 
 
 %%
