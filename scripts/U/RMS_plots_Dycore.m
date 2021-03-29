@@ -3,8 +3,9 @@
 % Marshall Borrus
 % This is where the data is held
 
-Dycore_Data_Path = '/scratch/users/mborrus/dycore/h4000';
+Dycore_Data_Path = '/scratch/users/mborrus/dycore/h4000/';
 cd /home/users/mborrus/Matlab_HPC
+
 mkdir plots/RMS     %Where these specific plots should go
 
 %%
@@ -12,7 +13,7 @@ mkdir plots/RMS     %Where these specific plots should go
 % Get the pressure and lats values
 % size(P) = 40; size(lat) = 64; size(lon) = 128;
 
-load(strcat(Dycore_Data_Path,'axis_stuff_64.mat'),'lat','lon','P');
+load('./data/axis_stuff_64.mat','lat','lon', 'P');
 days = (1:100);
     
 % Set pressure and lat ranges
