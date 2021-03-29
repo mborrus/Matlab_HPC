@@ -28,7 +28,7 @@ lambda =.6;
     N_range = find(lat > 30 & lat < 80);
     S_range = find(lat < -30 & lat > -80);
 lat_original = lat;
-lat = lat_original([S_range; N_range]);
+lat = lat([N_range S_range]);
 
 for run_N = 1:length(File_Numbers)
 %for run_N = 1

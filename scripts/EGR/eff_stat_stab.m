@@ -63,5 +63,6 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
 
  % effective static stability following equation 8 of O'Gorman, JAS, 2011
  dtheta_dp_eff = dtheta_dp-lambda.*dtheta_dp_ma;
- dtheta_dz_eff = dtheta_dp_eff./(-g.*rho);
-
+ dtheta_dz_eff_g = dtheta_dp_eff/(-g);
+ "test"
+ dtheta_dz_eff = dtheta_dz_eff_g./rho;

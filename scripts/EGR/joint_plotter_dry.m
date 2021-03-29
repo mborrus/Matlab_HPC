@@ -3,7 +3,7 @@
 cd '/home/users/mborrus/Matlab_HPC'
 mkdir plots/EGR/Comparison
 
-load('./data/EGR/AM4/AM4_EGR.mat'); clear theta
+load('./data/EGR/AM4/AM4_EGR_30.mat'); clear theta
     lat_am4 = lat; clear lat; p_am4 = p; clear p;
     dtheta_z_dry = squeeze(dtheta_z(2,:,:,:)); clear dtheta_z
     dtheta_p_dry = squeeze(dtheta_p(2,:,:,:)); clear dtheta_p
@@ -36,7 +36,7 @@ load('./data/EGR/dycore/h4000_EGR_N2.mat'); clear theta
     N_Mid_dy = find(lat_dy > 40 & lat_dy < 70);
     S_Mid_dy = find(lat_dy < -40 & lat_dy > -70);
 
-save('./data/EGR/Comparison_Values.mat')
+save('./data/EGR/Comparison_Values_30.mat')
 
 %%%%%%%%%
 %%
