@@ -3,7 +3,7 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
 % calculates the effective static stability derived in O'Gorman, JAS, 2011, pages 75-90 according to equation 8 
 %
 % inputs are 1d vertical profiles of pressure and temperature and the asymmetry parameter lambda (default value 0.6):
-% p       pressure (hPa)
+% p       pressure (Pa)
 % temp    temperature (K)
 % lambda  asymmetry parameter defined by equation 5 of O'Gorman, JAS, 2011
 
@@ -50,7 +50,8 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
  % density
  temp_virtual = temp.*(1.0+rs/gc_ratio)./(1.0+rs);
  rho          = p/Rd./temp_virtual;
- 
+ % rho = [J / m^3]/[J/kg/K]*[]
+ % rho = [- / m^3]/[-/kg/-]*[-]
  % rho          = p/Rd./temp_virtual;
 
  % moist adiabatic lapse rate
@@ -65,12 +66,4 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
 
  % effective static stability following equation 8 of O'Gorman, JAS, 2011
  dtheta_dp_eff = dtheta_dp-lambda.*dtheta_dp_ma;
- 
- p = p/100;
- %rho = p/(287.04)./(temp.*(1.0+(0.6220*6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))./...
- %    (p-6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))))/0.6220)./(1.0+(0.6220*6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))./...
- %    (p-6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))))));
- rho = p/Rd./(temp_virtual);
- 
- dtheta_dz_eff_g = dtheta_dp_eff/(-g*100);
- dtheta_dz_eff = dtheta_dz_eff_g./(rho);
+ dtheta_dz_eff = dtheta_dp_eff.*(-g*rho);

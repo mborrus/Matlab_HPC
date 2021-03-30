@@ -20,7 +20,8 @@ p = pressure_levels(Pressure_range);
 pa = p*100;
 
 H = 7300; % scale height, m
-z = -H*log(p/1000);
+p0       = 1e5;
+z = -H*log(pa/p0);
 r = 6.37e6; % Radius of Earth
 omega = 2*pi/(24*3600);
 f = 2*omega*sin(2*pi*lat/360);
@@ -58,6 +59,7 @@ for run_N = 1:length(File_Numbers)
         MOIST_egr = zeros(length(File_Numbers),la,pr,d);
         dtheta_dz_eff = zeros(length(File_Numbers),la,pr,d);
         dtheta_dp_eff = zeros(length(File_Numbers),la,pr,d);
+        rho = zeros(length(File_Numbers),la,pr,d);
 
             "vars created"
     else
@@ -101,7 +103,7 @@ for run_N = 1:length(File_Numbers)
     
     for lat_N = 1:la
         for day_N = 1:d
-            [dtheta_dz_eff(run_N,lat_N,:,day_N),dtheta_dp_eff(run_N,lat_N,:,day_N)] = eff_stat_stab(pa', T(lat_N,:,day_N), lambda);
+            [rho(run_N,lat_N,:,day_N),dtheta_dz_eff(run_N,lat_N,:,day_N),dtheta_dp_eff(run_N,lat_N,:,day_N)] = eff_stat_stab(pa', T(lat_N,:,day_N), lambda);
         end
     end
     
@@ -124,7 +126,7 @@ end
 %     DRY_dtheta_z = dtheta_z;
 %     MOIST_dtheta_z = dtheta_dp_eff;
 %     save(['./data/EGR/AM4/AM4_EGR.mat'], 'DRY_egr_mean','DRY_N2_mean','DRY_dtheta_z','du_z','MOIST_dtheta_z','MOIST_egr_mean','MOIST_N2_mean')
-    save(['./data/EGR/AM4/AM4_EGR_30.mat'], 'lat', 'p', 'theta','dtheta_z','dtheta_p','du_z','DRY_N2', 'DRY_egr','MOIST_N2','MOIST_egr','dtheta_dz_eff','dtheta_dp_eff');
+    save(['./data/EGR/AM4/AM4_EGR_30.mat'],'rho', 'lat', 'p', 'theta','dtheta_z','dtheta_p','du_z','DRY_N2', 'DRY_egr','MOIST_N2','MOIST_egr','dtheta_dz_eff','dtheta_dp_eff');
     
     
     
