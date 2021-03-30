@@ -67,9 +67,10 @@ function [dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
  dtheta_dp_eff = dtheta_dp-lambda.*dtheta_dp_ma;
  
  p = p/100;
- rho = (p/(287.04)./temp.*(1.0+(0.6220*6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))./...
-     (p-6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))))/0.6220)./(1.0+(0.6220*6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))./...
-     (p-6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5)))));
+ %rho = p/(287.04)./(temp.*(1.0+(0.6220*6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))./...
+ %    (p-6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))))/0.6220)./(1.0+(0.6220*6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))./...
+ %    (p-6.1120*exp(17.67*temp-273.15./(temp-273.15+243.5))))));
+ rho = p/Rd./(temp_virtual);
  
  dtheta_dz_eff_g = dtheta_dp_eff/(-g*100);
  dtheta_dz_eff = dtheta_dz_eff_g./(rho);
