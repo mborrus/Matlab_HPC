@@ -1,12 +1,12 @@
-folderpath = pwd;
-Save_Folder = strcat('/scratch/users/mborrus/dycore/',folderpath(70:71),'/',folderpath(75))
-mkdir(Save_Folder)
+%% Test Script
+
+clear all;close all;clc;
 tic
 % this will take the model output  and interpolate from sigma levels onto
 % pressure levels and saves in a file called u_interp_the number of the
 % file
 %load axis_stuff_64; % load the values for latitude, longitude etc for the T42 hybrid model setup
-
+​
 % sigma interpolation values
 b = [0 0.0000189 .0000472 .000102 .000199 .000358 ...
      .000606 .001 .0015 .0023 .0033 .0046 .0064 ...
@@ -21,28 +21,20 @@ P_inter1=[0.0212    0.0330    0.0746    0.1505    0.2785    0.4820    0.8030    
  10.0500   13.2500   17.2000   22.1000   28.0000   35.1000   43.6500   53.7500   65.6000   79.5000   95.7000  114.4000  135.8500 ...
  160.4500  188.5500  220.4000  256.4000  297.0000  342.5500  393.5500  450.5000  513.8000  584.0000  661.7000  747.5000  841.9500 925.0000];
 P_inter=P_inter1';
-
-atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
-
-%%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
-
-print('u comp name has been written')
-
-u=ncread(atmos_file_name,'ucomp');
-print('u comp is saved')
-
+​
+u=ncread('./h4000/ary0/atmos_daily.nc','ucomp');
 'interpolating u'
 [tt jj kk ll]=size(u);
 u_interp=squeeze(zeros(tt,jj,kk,ll));
-ps=ncread(​atmos_file_name,'ps');
-bk=ncread(​atmos_file_name,'bk');
+ps=ncread('./h4000/ary0/atmos_daily.nc','ps');
+bk=ncread('./h4000/ary0/atmos_daily.nc','bk');
 sig=diff(bk)/2+bk(1:end-1);
 ​
 for t=1:tt
       for l=1:ll
         for j = 1:jj
           ps1=squeeze(ps(t,j,l));
-            Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
+		Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
           	u_interp(t,j,:,l)=interp1(Prr,squeeze(u(t,j,:,l)),P_inter,'spline');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % this is to Nan data that is "in" the mountain
@@ -59,12 +51,12 @@ clear mtn
 end
 clear u
 u_interp_01=u_interp;
-save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
+save('./h4000/ary0/u_interp_01','u_interp_01');
 ​
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate v
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-v=ncread(​atmos_file_name,'vcomp');
+v=ncread('./h4000/ary0/atmos_daily.nc','vcomp');
 'interpolating v'
 [tt jj kk ll]=size(v);
 v_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -89,12 +81,12 @@ clear mtn
 end
 clear v
 v_interp_01=v_interp;
-save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
+save('./h4000/ary0/v_interp_01','v_interp_01');
 ​
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate T
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-T=ncread(​atmos_file_name,'temp');
+T=ncread('./h4000/ary0/atmos_daily.nc','temp');
 [tt jj kk ll]=size(T);
 'interpolating T'
 T_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -118,11 +110,11 @@ clear mtn
 end
 clear T
 T_interp_01=T_interp;
-save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
+save('./h4000/ary0/T_interp_01','T_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate geopotential height
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-geopot=ncread(​atmos_file_name,'height');
+geopot=ncread('./h4000/ary0/atmos_daily.nc','height');
 'interpolating h'
 [tt jj kk ll]=size(geopot);
 h_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -148,5 +140,5 @@ end
 ​
 clear geopot
 h_interp_01=h_interp;
-save(strcat(Save_Folder,'/h_interp_01'),'h_interp_01');
+save('./h4000/ary0/h_interp_01','h_interp_01');
 toc
