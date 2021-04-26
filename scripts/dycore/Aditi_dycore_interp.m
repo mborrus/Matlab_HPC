@@ -25,10 +25,9 @@ atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
 
 %%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
 
-print('u comp name has been written')
 
 u=ncread(atmos_file_name,'ucomp');
-print('u comp is saved')
+
 
 'interpolating u'
 [tt jj kk ll]=size(u);
