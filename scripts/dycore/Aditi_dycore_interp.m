@@ -22,9 +22,9 @@ P_inter1=[0.0212    0.0330    0.0746    0.1505    0.2785    0.4820    0.8030    
  160.4500  188.5500  220.4000  256.4000  297.0000  342.5500  393.5500  450.5000  513.8000  584.0000  661.7000  747.5000  841.9500 925.0000];
 P_inter=P_inter1';
 
-​atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
+atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
 
-atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
+%%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
 
 print('u comp name has been written')
 
