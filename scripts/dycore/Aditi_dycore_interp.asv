@@ -1,15 +1,7 @@
-FilePath_Base = '/oak/stanford/schools/ees/aditis2/dycore/workdir_DELH_4000.0';
-FilePath_First = [10:10:70];
-FilePath_Second = [1,2,3];
+folderpath = pwd;
+Save_Folder = strcat('/scratch/users/mborrus/dycore/',folderpath(70:71),'/',folderpath(75))
+mkdir(Save_Folder(1:end-2))
 
-for i = 1
-    for j = 1
-FilePath_Full = strcat(FilePath_Base,'/perturb_',num2str(FilePath_First(i)),'_1.',num2str(FilePath_Second(j)),'00000000E-07')
-cd FilePath_Full
-    end
-end
-strcat('/scratch/users/mborrus/dycore/test/'),FilePath_Full(70:71),'/',FilePath_Full(75))
-Save_Folder = /scratch/users/mborrus/dycore/test/v_interp_01FilePath_Full(70:71)
 clear all;close all;clc;
 tic
 % this will take the model output  and interpolate from sigma levels onto
@@ -31,8 +23,9 @@ P_inter1=[0.0212    0.0330    0.0746    0.1505    0.2785    0.4820    0.8030    
  10.0500   13.2500   17.2000   22.1000   28.0000   35.1000   43.6500   53.7500   65.6000   79.5000   95.7000  114.4000  135.8500 ...
  160.4500  188.5500  220.4000  256.4000  297.0000  342.5500  393.5500  450.5000  513.8000  584.0000  661.7000  747.5000  841.9500 925.0000];
 P_inter=P_inter1';
-​
-u=ncread('atmos_daily_0.nc','ucomp');
+​atmos
+u=ncread(dir(fullfile(pwd, 'atmos_daily_*')).name,'ucomp');
+
 'interpolating u'
 [tt jj kk ll]=size(u);
 u_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -61,7 +54,7 @@ clear mtn
 end
 clear u
 u_interp_01=u_interp;
-save('/scratch/users/mborrus/dycore/test/u_interp_01','u_interp_01');
+save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
 ​
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate v
@@ -91,7 +84,7 @@ clear mtn
 end
 clear v
 v_interp_01=v_interp;
-save('/scratch/users/mborrus/dycore/test/v_interp_01','v_interp_01');
+save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
 ​
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate T
@@ -120,7 +113,7 @@ clear mtn
 end
 clear T
 T_interp_01=T_interp;
-save('/scratch/users/mborrus/dycore/test/T_interp_01','T_interp_01');
+save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate geopotential height
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,5 +143,5 @@ end
 ​
 clear geopot
 h_interp_01=h_interp;
-save('/scratch/users/mborrus/dycore/test/h_interp_01','h_interp_01');
+save(strcat(Save_Folder,'/h_interp_01'),'h_interp_01');
 toc

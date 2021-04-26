@@ -23,13 +23,14 @@ P_inter1=[0.0212    0.0330    0.0746    0.1505    0.2785    0.4820    0.8030    
  10.0500   13.2500   17.2000   22.1000   28.0000   35.1000   43.6500   53.7500   65.6000   79.5000   95.7000  114.4000  135.8500 ...
  160.4500  188.5500  220.4000  256.4000  297.0000  342.5500  393.5500  450.5000  513.8000  584.0000  661.7000  747.5000  841.9500 925.0000];
 P_inter=P_inter1';
-​
-u=ncread('atmos_daily_0.nc','ucomp');
+​atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
+u=ncread(​atmos_file_name,'ucomp');
+
 'interpolating u'
 [tt jj kk ll]=size(u);
 u_interp=squeeze(zeros(tt,jj,kk,ll));
-ps=ncread('atmos_daily_0.nc','ps');
-bk=ncread('atmos_daily_0.nc','bk');
+ps=ncread(​atmos_file_name,'ps');
+bk=ncread(​atmos_file_name,'bk');
 sig=diff(bk)/2+bk(1:end-1);
 ​
 for t=1:tt
@@ -58,7 +59,7 @@ save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate v
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-v=ncread('atmos_daily_0.nc','vcomp');
+v=ncread(​atmos_file_name,'vcomp');
 'interpolating v'
 [tt jj kk ll]=size(v);
 v_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -88,7 +89,7 @@ save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate T
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-T=ncread('atmos_daily_0.nc','temp');
+T=ncread(​atmos_file_name,'temp');
 [tt jj kk ll]=size(T);
 'interpolating T'
 T_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -116,7 +117,7 @@ save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate geopotential height
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-geopot=ncread('atmos_daily_0.nc','height');
+geopot=ncread(​atmos_file_name,'height');
 'interpolating h'
 [tt jj kk ll]=size(geopot);
 h_interp=squeeze(zeros(tt,jj,kk,ll));
