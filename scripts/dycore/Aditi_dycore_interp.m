@@ -2,8 +2,7 @@ folderpath = pwd;
 Save_Folder = strcat('/scratch/users/mborrus/dycore/',folderpath(70:71),'/',folderpath(75))
 mkdir(Save_Folder)
 tic
-% this will take the model output  and interpolate from sigma levels onto
-% pressure levels and saves in a file called u_interp_the number of the
+% this will take the model output  and interpolate from sigma levels onto% pressure levels and saves in a file called u_interp_the number of the
 % file
 %load axis_stuff_64; % load the values for latitude, longitude etc for the T42 hybrid model setup
 
@@ -34,10 +33,10 @@ print('u comp is saved')
 'interpolating u'
 [tt jj kk ll]=size(u);
 u_interp=squeeze(zeros(tt,jj,kk,ll));
-ps=ncread(​atmos_file_name,'ps');
-bk=ncread(​atmos_file_name,'bk');
+ps=ncread(atmos_file_name,'ps');
+bk=ncread(atmos_file_name,'bk');
 sig=diff(bk)/2+bk(1:end-1);
-​
+
 for t=1:tt
       for l=1:ll
         for j = 1:jj
@@ -46,7 +45,7 @@ for t=1:tt
           	u_interp(t,j,:,l)=interp1(Prr,squeeze(u(t,j,:,l)),P_inter,'spline');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % this is to Nan data that is "in" the mountain
-​
+
 if max(Pr)<max(P_inter)
 	mtn=find(max(Pr)<P_inter);
 	u_interp(t,j,mtn,l)=NaN;
@@ -60,11 +59,11 @@ end
 clear u
 u_interp_01=u_interp;
 save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
-​
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate v
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-v=ncread(​atmos_file_name,'vcomp');
+v=ncread(atmos_file_name,'vcomp');
 'interpolating v'
 [tt jj kk ll]=size(v);
 v_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -76,7 +75,7 @@ for t=1:tt
 		v_interp(t,j,:,l)=interp1(Prr,squeeze(v(t,j,:,l)),P_inter,'spline');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % this is to Nan data that is "in" the mountain
-​
+
 if max(Pr)<max(P_inter)
   mtn=find(max(Pr)<P_inter);
 v_interp(t,j,mtn,l)=NaN;
@@ -90,11 +89,11 @@ end
 clear v
 v_interp_01=v_interp;
 save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
-​
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate T
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-T=ncread(​atmos_file_name,'temp');
+T=ncread(atmos_file_name,'temp');
 [tt jj kk ll]=size(T);
 'interpolating T'
 T_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -122,7 +121,7 @@ save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate geopotential height
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-geopot=ncread(​atmos_file_name,'height');
+geopot=ncread(atmos_file_name,'height');
 'interpolating h'
 [tt jj kk ll]=size(geopot);
 h_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -134,7 +133,7 @@ for t=1:tt
           h_interp(t,j,:,l)=interp1(Prr,squeeze(geopot(t,j,:,l)),P_inter,'spline');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % this is to Nan data that is "in" the mountain
-​
+
 if max(Pr)<max(P_inter)
   mtn=find(max(Pr)<P_inter);
 h_interp(t,j,mtn,l)=NaN;
@@ -145,7 +144,7 @@ clear mtn
       end
 %t
 end
-​
+
 clear geopot
 h_interp_01=h_interp;
 save(strcat(Save_Folder,'/h_interp_01'),'h_interp_01');
