@@ -30,7 +30,8 @@ lambda =.6;
     N_range = find(lat > 30 & lat < 80);
     S_range = find(lat < -30 & lat > -80);
 lat_original = lat;
-lat = lat_original([S_range; N_range]);
+lat_range = [S_range; N_range];
+lat_shorter = lat_original(lat_range);
 
 for run_N = 1:length(File_Numbers)
 %for run_N = 1
@@ -44,8 +45,8 @@ for run_N = 1:length(File_Numbers)
     T = ncread(temp_path,'temp',start_loc,count);
     
     %Zonal mean
-    T = squeeze(mean(T(:,[N_range S_range],:,:),1)); %average across longitude
-    u = squeeze(mean(u(:,[N_range S_range],:,:),1)); %average across longitude
+    T = squeeze(mean(T(:,:,:,:),1)); %average across longitude
+    u = squeeze(mean(u(:,:,:,:),1)); %average across longitude
     [la pr d] = size(u);
     
     if exist('theta') == 0;
@@ -117,16 +118,16 @@ for run_N = 1:length(File_Numbers)
     
 end
 
-     DRY_egr_mean = squeeze(mean(DRY_egr,3));
-     DRY_N2_mean = squeeze(mean(DRY_N2,3));
+     DRY_egr_mean = squeeze(mean(DRY_egr(:,lat_range,:,:),3));
+     DRY_N2_mean = squeeze(mean(DRY_N2(:,lat_range,:,:),3));
 % 
-     MOIST_egr_mean = squeeze(mean(MOIST_egr,3));
-     MOIST_N2_mean = squeeze(mean(MOIST_N2,3));
+     MOIST_egr_mean = squeeze(mean(MOIST_egr(:,lat_range,:,:),3));
+     MOIST_N2_mean = squeeze(mean(MOIST_N2(:,lat_range,:,:),3));
 %     
 %     DRY_dtheta_z = dtheta_z;
 %     MOIST_dtheta_z = dtheta_dp_eff;
 %     save(['./data/EGR/AM4/AM4_EGR.mat'], 'DRY_egr_mean','DRY_N2_mean','DRY_dtheta_z','du_z','MOIST_dtheta_z','MOIST_egr_mean','MOIST_N2_mean')
-    save(['./data/EGR/AM4/AM4_EGR_30.mat'],'rho', 'lat', 'p', 'theta','dtheta_z','dtheta_p','du_z','DRY_N2', 'DRY_egr','MOIST_N2','MOIST_egr','dtheta_dz_eff','dtheta_dp_eff');
+    save(['./data/EGR/AM4/AM4_EGR.mat'],'rho', 'lat', 'p', 'theta','dtheta_z','dtheta_p','du_z','DRY_N2', 'DRY_egr','MOIST_N2','MOIST_egr','dtheta_dz_eff','dtheta_dp_eff');
     
     
     
@@ -138,7 +139,7 @@ end
     Global_average = mean(ratio_dry_over_moist(1,:,:),2);
     global_avg = figure(1); clf;
     plot(1:100,squeeze(Global_average))
-    title('Global Average Dry EGR/Moist EGR - 30-80deg')
+    title('Global Average Dry EGR/Moist EGR - N/S 30-80deg')
     xlabel('days')
     ylabel('dry/moist')
     %axis([ 1 100 0 7])
@@ -146,7 +147,7 @@ end
     
     sixty = figure(2); clf
     
-    plot(1:100,squeeze(ratio_dry_over_moist(1,find(lat > 59 & lat < 61),:)))
+    plot(1:100,squeeze(ratio_dry_over_moist(1,find(lat_shorter > 59 & lat_shorter < 61),:)))
     title('60N Dry EGR/Moist EGR - 30-80deg')
     xlabel('days')
     ylabel('dry/moist')
@@ -155,7 +156,7 @@ end
     
     Comparison = figure(300); clf
     hold on;
-    plot(1:100,squeeze(ratio_dry_over_moist(1,find(lat > 59 & lat < 61),:)))
+    plot(1:100,squeeze(ratio_dry_over_moist(1,find(lat_shorter > 59 & lat_shorter < 61),:)))
     plot(1:100,squeeze(Global_average))
     title('Dry EGR/Moist EGR - 30-80deg')
     xlabel('days')
