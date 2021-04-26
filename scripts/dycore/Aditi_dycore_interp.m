@@ -1,8 +1,7 @@
 folderpath = pwd;
 Save_Folder = strcat('/scratch/users/mborrus/dycore/',folderpath(70:71),'/',folderpath(75))
-mkdir(Save_Folder(1:end-2))
+mkdir(Save_Folder)
 
-clear all;close all;clc;
 tic
 % this will take the model output  and interpolate from sigma levels onto
 % pressure levels and saves in a file called u_interp_the number of the
