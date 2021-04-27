@@ -1,6 +1,13 @@
 folderpath = pwd;
 Save_Folder = strcat('/scratch/users/mborrus/dycore/',folderpath(70:71),'/',folderpath(75))
-mkdir(Save_Folder)
+
+if isfolder(Save_Folder) == 0
+    mkdir(Save_Folder);
+    'folder made'
+else
+    'folder exists'
+end
+
 tic
 % this will take the model output  and interpolate from sigma levels onto% pressure levels and saves in a file called u_interp_the number of the
 % file
@@ -24,128 +31,156 @@ P_inter=P_inter1';
 atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
 
 %%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
+if isfile(strcat(Save_Folder,'/u_interp_01.mat')) == 0
+    'reading u'
+    u=ncread(atmos_file_name,'ucomp');
 
-'reading u'
-u=ncread(atmos_file_name,'ucomp');
 
+    'interpolating u'
+    [tt jj kk ll]=size(u);
+    u_interp=squeeze(zeros(tt,jj,kk,ll));
+    ps=ncread(atmos_file_name,'ps');
+    bk=ncread(atmos_file_name,'bk');
+    sig=diff(bk)/2+bk(1:end-1);
 
-'interpolating u'
-[tt jj kk ll]=size(u);
-u_interp=squeeze(zeros(tt,jj,kk,ll));
-ps=ncread(atmos_file_name,'ps');
-bk=ncread(atmos_file_name,'bk');
-sig=diff(bk)/2+bk(1:end-1);
+    for t=1:tt
+          for l=1:ll
+            for j = 1:jj
+              ps1=squeeze(ps(t,j,l));
+                Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
+                u_interp(t,j,:,l)=interp1(Prr,squeeze(u(t,j,:,l)),P_inter,'spline');
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % this is to Nan data that is "in" the mountain
 
-for t=1:tt
-      for l=1:ll
-        for j = 1:jj
-          ps1=squeeze(ps(t,j,l));
-            Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
-          	u_interp(t,j,:,l)=interp1(Prr,squeeze(u(t,j,:,l)),P_inter,'spline');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% this is to Nan data that is "in" the mountain
-
-if max(Pr)<max(P_inter)
-	mtn=find(max(Pr)<P_inter);
-	u_interp(t,j,mtn,l)=NaN;
+    if max(Pr)<max(P_inter)
+        mtn=find(max(Pr)<P_inter);
+        u_interp(t,j,mtn,l)=NaN;
+    end
+    clear mtn
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            end
+          end
+    %t
+    end
+    clear u
+    u_interp_01=u_interp;
+    'saving u'
+    save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
+else
+    'u already exists'
 end
-clear mtn
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        end
-      end
-%t
-end
-clear u
-u_interp_01=u_interp;
-save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate v
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-'reading v'
-v=ncread(atmos_file_name,'vcomp');
-'interpolating v'
-[tt jj kk ll]=size(v);
-v_interp=squeeze(zeros(tt,jj,kk,ll));
-for t=1:tt
-      for l=1:ll
-        for j = 1:jj
-          ps1=squeeze(ps(t,j,l));
-          	Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
-		v_interp(t,j,:,l)=interp1(Prr,squeeze(v(t,j,:,l)),P_inter,'spline');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% this is to Nan data that is "in" the mountain
 
-if max(Pr)<max(P_inter)
-  mtn=find(max(Pr)<P_inter);
-v_interp(t,j,mtn,l)=NaN;
-end
-clear mtn
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        end
-      end
-%t
-end
-clear v
-v_interp_01=v_interp;
-save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
+if isfile(strcat(Save_Folder,'/v_interp_01.mat')) == 0
+
+    'reading v'
+    v=ncread(atmos_file_name,'vcomp');
+    'interpolating v'
+    [tt jj kk ll]=size(v);
+    v_interp=squeeze(zeros(tt,jj,kk,ll));
+    for t=1:tt
+          for l=1:ll
+            for j = 1:jj
+              ps1=squeeze(ps(t,j,l));
+                Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
+            v_interp(t,j,:,l)=interp1(Prr,squeeze(v(t,j,:,l)),P_inter,'spline');
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % this is to Nan data that is "in" the mountain
+
+    if max(Pr)<max(P_inter)
+      mtn=find(max(Pr)<P_inter);
+    v_interp(t,j,mtn,l)=NaN;
+    end
+    clear mtn
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            end
+          end
+    %t
+    end
+    clear v
+    v_interp_01=v_interp;
+    'saving v'
+    save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
+else
+    'v already exists'
+end   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate T
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-T=ncread(atmos_file_name,'temp');
-[tt jj kk ll]=size(T);
-'interpolating T'
-T_interp=squeeze(zeros(tt,jj,kk,ll));
-for t=1:tt
-      for l=1:ll
-        for j = 1:jj
-          ps1=squeeze(ps(t,j,l));
-          	Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
-            T_interp(t,j,:,l)=interp1(Prr,squeeze(T(t,j,:,l)),P_inter,'spline');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% this is to Nan data that is "in" the mountain
-if max(Pr)<max(P_inter)
-  mtn=find(max(Pr)<P_inter);
-T_interp(t,j,mtn,l)=NaN;
+
+if isfile(strcat(Save_Folder,'/T_interp_01.mat')) == 0
+    
+    T=ncread(atmos_file_name,'temp');
+    [tt jj kk ll]=size(T);
+    'interpolating T'
+    T_interp=squeeze(zeros(tt,jj,kk,ll));
+    for t=1:tt
+          for l=1:ll
+            for j = 1:jj
+              ps1=squeeze(ps(t,j,l));
+                Pr=(a+b.*ps1)./100;Prr=diff(Pr)/2+Pr(1:end-1);
+                T_interp(t,j,:,l)=interp1(Prr,squeeze(T(t,j,:,l)),P_inter,'spline');
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % this is to Nan data that is "in" the mountain
+    if max(Pr)<max(P_inter)
+      mtn=find(max(Pr)<P_inter);
+    T_interp(t,j,mtn,l)=NaN;
+    end
+    clear mtn
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            end
+          end
+    %t
+    end
+    clear T
+    T_interp_01=T_interp;
+    'saving T'
+    save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
+else
+    'T already exists'
 end
-clear mtn
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        end
-      end
-%t
-end
-clear T
-T_interp_01=T_interp;
-save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate geopotential height
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-geopot=ncread(atmos_file_name,'height');
-'interpolating h'
-[tt jj kk ll]=size(geopot);
-h_interp=squeeze(zeros(tt,jj,kk,ll));
-for t=1:tt
-      for l=1:ll
-        for j = 1:jj
-          ps1=squeeze(ps(t,j,l));
- 		Pr=(a+b.*ps1)./100; Prr=diff(Pr)/2+Pr(1:end-1);
-          h_interp(t,j,:,l)=interp1(Prr,squeeze(geopot(t,j,:,l)),P_inter,'spline');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% this is to Nan data that is "in" the mountain
 
-if max(Pr)<max(P_inter)
-  mtn=find(max(Pr)<P_inter);
-h_interp(t,j,mtn,l)=NaN;
-end
-clear mtn
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        end
-      end
-%t
+if isfile(strcat(Save_Folder,'/h_interp_01.mat')) == 0
+
+    geopot=ncread(atmos_file_name,'height');
+    'interpolating h'
+    [tt jj kk ll]=size(geopot);
+    h_interp=squeeze(zeros(tt,jj,kk,ll));
+    for t=1:tt
+          for l=1:ll
+            for j = 1:jj
+              ps1=squeeze(ps(t,j,l));
+            Pr=(a+b.*ps1)./100; Prr=diff(Pr)/2+Pr(1:end-1);
+              h_interp(t,j,:,l)=interp1(Prr,squeeze(geopot(t,j,:,l)),P_inter,'spline');
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % this is to Nan data that is "in" the mountain
+
+    if max(Pr)<max(P_inter)
+      mtn=find(max(Pr)<P_inter);
+    h_interp(t,j,mtn,l)=NaN;
+    end
+    clear mtn
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            end
+          end
+    %t
+    end
+
+    clear geopot
+    h_interp_01=h_interp;
+    'writing h'
+    save(strcat(Save_Folder,'/h_interp_01'),'h_interp_01');
+else
+    'h already exists'
 end
 
-clear geopot
-h_interp_01=h_interp;
-save(strcat(Save_Folder,'/h_interp_01'),'h_interp_01');
 toc
