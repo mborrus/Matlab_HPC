@@ -25,7 +25,7 @@ atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
 
 %%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
 
-
+'reading u'
 u=ncread(atmos_file_name,'ucomp');
 
 
@@ -62,6 +62,7 @@ save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % interpolate v
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+'reading v'
 v=ncread(atmos_file_name,'vcomp');
 'interpolating v'
 [tt jj kk ll]=size(v);
