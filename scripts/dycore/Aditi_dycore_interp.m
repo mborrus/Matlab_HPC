@@ -29,6 +29,11 @@ P_inter1=[0.0212    0.0330    0.0746    0.1505    0.2785    0.4820    0.8030    
 P_inter=P_inter1';
 
 atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
+ps=ncread(atmos_file_name,'ps');
+bk=ncread(atmos_file_name,'bk');
+sig=diff(bk)/2+bk(1:end-1);
+
+
 
 %%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
 if isfile(strcat(Save_Folder,'/u_interp_01.mat')) == 0
@@ -66,6 +71,7 @@ if isfile(strcat(Save_Folder,'/u_interp_01.mat')) == 0
     u_interp_01=u_interp;
     'saving u'
     save(strcat(Save_Folder,'/u_interp_01'),'u_interp_01');
+    clear u_interp_01 u_interp
 else
     'u already exists'
 end
@@ -105,6 +111,7 @@ if isfile(strcat(Save_Folder,'/v_interp_01.mat')) == 0
     v_interp_01=v_interp;
     'saving v'
     save(strcat(Save_Folder,'/v_interp_01'),'v_interp_01');
+    clear v_interp v_interp_01
 else
     'v already exists'
 end   
@@ -114,7 +121,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if isfile(strcat(Save_Folder,'/T_interp_01.mat')) == 0
-    
+    'reading T'
     T=ncread(atmos_file_name,'temp');
     [tt jj kk ll]=size(T);
     'interpolating T'
@@ -141,6 +148,7 @@ if isfile(strcat(Save_Folder,'/T_interp_01.mat')) == 0
     T_interp_01=T_interp;
     'saving T'
     save(strcat(Save_Folder,'/T_interp_01'),'T_interp_01');
+    clear T_interp_01 T_interp
 else
     'T already exists'
 end
@@ -150,7 +158,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if isfile(strcat(Save_Folder,'/h_interp_01.mat')) == 0
-
+    'reading h'
     geopot=ncread(atmos_file_name,'height');
     'interpolating h'
     [tt jj kk ll]=size(geopot);
@@ -179,6 +187,7 @@ if isfile(strcat(Save_Folder,'/h_interp_01.mat')) == 0
     h_interp_01=h_interp;
     'writing h'
     save(strcat(Save_Folder,'/h_interp_01'),'h_interp_01');
+    clear h_interp_01 h_interp
 else
     'h already exists'
 end
