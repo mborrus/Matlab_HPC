@@ -32,8 +32,8 @@ atmos_file_name = dir(fullfile(pwd, 'atmos_daily_*')).name;
 ps=ncread(atmos_file_name,'ps');
 bk=ncread(atmos_file_name,'bk');
 sig=diff(bk)/2+bk(1:end-1);
-
-
+toc
+tic
 
 %%atmos_file_name = strcat('atmos_daily_',num2str(str2num(folderpath(70:71))/10-1),'.nc')
 if isfile(strcat(Save_Folder,'/u_interp_01.mat')) == 0
@@ -123,6 +123,8 @@ end
 if isfile(strcat(Save_Folder,'/T_interp_01.mat')) == 0
     'reading T'
     T=ncread(atmos_file_name,'temp');
+    toc
+    tic
     [tt jj kk ll]=size(T);
     'interpolating T'
     T_interp=squeeze(zeros(tt,jj,kk,ll));
@@ -163,7 +165,7 @@ if isfile(strcat(Save_Folder,'/h_interp_01.mat')) == 0
     'interpolating h'
     [tt jj kk ll]=size(geopot);
     h_interp=squeeze(zeros(tt,jj,kk,ll));
-    for t=1:tt
+    parfor t=1:tt
           for l=1:ll
             for j = 1:jj
               ps1=squeeze(ps(t,j,l));
