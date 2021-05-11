@@ -1,4 +1,4 @@
-function [dtheta_dz_eff,dtheta_dp_eff,lambda_term,rho[dz] = eff_stat_stab(p, temp, lambda)
+function [dtheta_dz_eff,dtheta_dp_eff,lambda_term,rho] = eff_stat_stab(p, temp, lambda)
 
 % calculates the effective static stability derived in O'Gorman, JAS, 2011, pages 75-90 according to equation 8 
 %
@@ -23,14 +23,14 @@ function [dtheta_dz_eff,dtheta_dp_eff,lambda_term,rho[dz] = eff_stat_stab(p, tem
  cpd      = 1005.7;      % specific heat dry air [J/kg/K]
  cpv      = 1870;        % specific heat water vapor [J/kg/K]
  g        = 9.80665;     % gravitational acceleration [m/s^2]
- p0       = 1e5;         % reference pressure [Pa]
+ p0       = 1000;         % reference pressure [Pa]
  kappa    = Rd/cpd;
  gc_ratio = Rd/Rv;
 
  % saturation vapor pressure [Pa]
  Tc = temp-273.15;
  es = 611.20*exp(17.67*Tc./(Tc+243.5)); % Bolton 1980 equation 10
-
+th
  % latent heat of condensation [J/kg]
  L = (2.501-0.00237*Tc)*1e6; % Bolton 1980 equation 2
 
