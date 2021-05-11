@@ -1,4 +1,4 @@
-function [rho,dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
+function [rho,dtheta_dz_eff,dtheta_dp_eff,lambda_term] = eff_stat_stab(p, temp, lambda)
 
 % calculates the effective static stability derived in O'Gorman, JAS, 2011, pages 75-90 according to equation 8 
 %
@@ -50,9 +50,6 @@ function [rho,dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
  % density
  temp_virtual = temp.*(1.0+rs/gc_ratio)./(1.0+rs);
  rho          = p/Rd./temp_virtual;
- % rho = [J / m^3]/[J/kg/K]*[]
- % rho = [- / m^3]/[-/kg/-]*[-]
- % rho          = p/Rd./temp_virtual;
 
  % moist adiabatic lapse rate
  malr = g/cpd*(1+rs)./(1+cpv/cpd.*rs) ...
@@ -67,3 +64,5 @@ function [rho,dtheta_dz_eff,dtheta_dp_eff] = eff_stat_stab(p, temp, lambda)
  % effective static stability following equation 8 of O'Gorman, JAS, 2011
  dtheta_dp_eff = dtheta_dp-lambda.*dtheta_dp_ma;
  dtheta_dz_eff = dtheta_dp_eff.*(-g*rho);
+ lambda_term = dtheta_dp_ma./(-g.*rho);
+
